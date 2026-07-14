@@ -1,0 +1,12 @@
+date,product,category,quantity,price,total
+2026-05-02,Samsung Galaxy A15,Electronics,5,25000,125000
+2026-05-05,Dell Inspiron Laptop,Electronics,2,85000,170000
+2026-05-10,Nike Running Shoes,Footwear,10,4500,45000
+2026-05-15,Samsung Galaxy A15,Electronics,8,25000,200000
+2026-05-20,HP Pavilion Laptop,Electronics,1,78000,78000
+2026-06-01,Dell Inspiron Laptop,Electronics,3,85000,255000
+2026-06-03,Nike Running Shoes,Footwear,15,4500,67500
+2026-06-08,Samsung Galaxy A15,Electronics,12,25000,300000
+2026-06-15,HP Pavilion Laptop,Electronics,4,78000,312000
+2026-06-20,Samsung Galaxy A15,Electronics,6,25000,150000
+2026-06-25,Nike Running Shoes,Footwear,8,4500,36000
