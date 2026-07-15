@@ -61,6 +61,21 @@ def get_sales_trend(df: pd.DataFrame) -> dict:
     """Monthly sales totals, sorted chronologically."""
     trend = df.groupby(df["date"].dt.to_period("M"))["total"].sum()
     return {str(period): int(value) for period, value in trend.items()}
+def load_sales_data_from_buffer(file_obj, filename: str) -> pd.DataFrame:
+    """
+    Load sales data from an uploaded file (CSV or Excel).
+    file_obj: file-like object (from FastAPI's UploadFile)
+    filename: original filename, used to detect format
+    """
+    if filename.endswith(".csv"):
+        df = pd.read_csv(file_obj)
+    elif filename.endswith((".xlsx", ".xls")):
+        df = pd.read_excel(file_obj)
+    else:
+        raise ValueError("Unsupported file format. Please upload .csv or .xlsx")
+
+    df["date"] = pd.to_datetime(df["date"])
+    return df
 
 
 if __name__ == "__main__":

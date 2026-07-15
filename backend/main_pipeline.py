@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from groq import Groq
 
 from data_functions import (
-    load_sales_data,
     get_top_product,
     get_total_sales,
     get_sales_trend,
@@ -13,8 +12,6 @@ from query_router import route_query
 
 load_dotenv()
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-
-DF = load_sales_data("sample_data/sales.csv")
 
 FUNCTION_MAP = {
     "get_top_product": get_top_product,
@@ -27,7 +24,8 @@ Write entirely in Nepali (translate all words, including "quantity" as "था�
 You MUST use the exact numeric digits and product names as given in the data — do not recalculate or change them, but you may write them in Nepali digits (०-९) if that reads more naturally.
 Do NOT add any information that isn't in the data."""
 
-def answer_question(question: str) -> dict:
+
+def answer_question(question: str, df) -> dict:
     routed = route_query(question)
 
     if "error" in routed:
@@ -41,19 +39,17 @@ def answer_question(question: str) -> dict:
 
     try:
         if func_name == "get_sales_trend":
-            result = get_sales_trend(DF)
+            result = get_sales_trend(df)
         else:
-            result = FUNCTION_MAP[func_name](DF, **args)
+            result = FUNCTION_MAP[func_name](df, **args)
     except Exception as e:
         return {"error": f"Execution failed: {str(e)}", "stage": "execution"}
 
-# Pre-format currency values in Python so the LLM never touches raw digits
     display_data = dict(result)
     for key in ("value", "total_sales"):
         if key in display_data and result.get("metric") != "quantity":
             display_data[key] = format_nepali_currency(display_data[key]) + " रुपैयाँ"
 
-    # Special case: sales trend has amounts as dict values, not a single field
     if func_name == "get_sales_trend":
         display_data = {
             period: format_nepali_currency(amount) + " रुपैयाँ"
@@ -79,6 +75,9 @@ def answer_question(question: str) -> dict:
 
 
 if __name__ == "__main__":
+    from data_functions import load_sales_data
+    DF = load_sales_data("sample_data/sales.csv")
+
     test_questions = [
         "गत महिना सबैभन्दा धेरै बिक्री भएको उत्पादन कुन हो?",
         "जुनको कुल बिक्री कति भयो?",
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     ]
 
     for q in test_questions:
-        result = answer_question(q)
+        result = answer_question(q, DF)
         print(f"\nQ: {q}")
         if "error" in result:
             print(f"ERROR at stage '{result.get('stage')}': {result.get('error')}")
