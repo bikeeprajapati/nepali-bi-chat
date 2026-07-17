@@ -1,4 +1,5 @@
 import io
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
 
@@ -7,6 +8,13 @@ from main_pipeline import answer_question
 from session_store import create_session, get_session, session_exists
 
 app = FastAPI(title="Nepali Business Intelligence Chat API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class ChatRequest(BaseModel):
